@@ -1,0 +1,45 @@
+centos7网络属性配置
+	传统命名：以太网eth0[0,1,2...]
+	可预测功能
+			udev支持多种不同的命令方案
+			Firmware，拓扑结构
+			
+	网卡命名机制
+		systemd对网络设备的命名方式：
+			(a)	如果Firmware或BIOS为主板上集成的设备提供的索引信息可用且可预测根据此索引命名，例如eno1；
+			(b)	如果Firmware或BIOS为PCI-E拓展槽所提供的索引信息可用，且可预测，则根据此索引进行命名，例如ens1；
+			(c) 如果硬件接口的物理位置可用，则根据此信息进行命名，例如enp2s0；
+			(d) 如果用户显式启动，也可根据MAC地址进行命名，例如enx23087a1dc56
+			(e)	上述均不可用时，则使用传统命名机制：
+
+	名称组成格式
+		en：ethernet
+		wl：wlan
+		ww：wwan
+
+		名称类型：
+			o<index>: 集成设备的设备索引号
+			s<slot>: 拓展槽的索引号
+			x<MAC>: 基于MAC地址的命名
+			p<bus>s<slot>:enp2s1
+
+	网卡设备的命名过程：
+		第一步：
+			udev,辅助工具程序/lib/udev/rename_device，/user/lib/udev/rules.d/60-net.rules
+
+		第二步；
+			biosdevname 会根据/usr/lib/udev/rules.d/71-biosdevname.rules
+
+		第三步；
+			通过检测网络接口设备, 根据/usr/lib/udev/rules.d/75-net-description
+				ID_NET_NAME-ONBOARD, ID_NET_NAME_SLOT, ID_NET_NAME_PATH
+
+	回归传统命名方式：
+		(1) 编辑/etc/default/grub配文件
+			GRUB_CMDLINE_LINUX="net.ifnames=0 rhgb quiet"
+
+		(2) 为grub2生成其配置文件
+			grub2-mkconfig -o /etc/grub2.cfg
+			
+		(3) 重启系统
+
