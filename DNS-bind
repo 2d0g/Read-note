@@ -48,7 +48,7 @@ BIND安装配置:
     bind:
         服务脚本: /etc/rc.d/init.d/named 
         主配置文件: /etc/named.conf, /etc/named.rfc1912.zones, /etc/rndc.key
-        解析库文件: /var/named/ZONE_NAME.ZONE_NAME
+        解析库文件: /var/named/ZONE_NAME.zone
             注意: 
                 (1) 一台物理服务器可同时为多个区域提高解析;
                 (2) 必须要有根区域文件, named.ca
@@ -76,7 +76,7 @@ BIND安装配置:
                 file "ZONE_NAME.zone";
             }
         (2) 定义区域解析库文件
-         
+            SOA, NS, MX, A, CNAME
             出现的内容:
                 宏定义:
                 资源记录:
@@ -110,9 +110,31 @@ BIND安装配置:
                     file "ZONE_NAME.zone";
                 };
             (2) 区域解析库文件
+                SOA, NS, A, CNAME
                 注意: 不需要MX和A，以及AAA记录以PTR记录为主:
                 
                 示例:
 DNS主从服务器配置:
-     
+    前提: 必须分别在两台主机搭建缓存名称服务器
+        确认安装bind --> 创建编辑解析库文件及其属组 --> 更改监听网卡地址(此前是搭建缓存名称服务器)以及配置添加解析库文件 --> 启动bind服务
+        named-checkconf: 检查配置文件
+        named-checkzone ZONE_NAME.in-addr.arpa /var/named/ZONE_NAME.zone: 检测区域配置文件
+        1. 应该为一台独立的名称服务器;
+        2. 主服务器的解析库文件中必须要有一条NS记录指向从服务器;
+        3. 从服务器只需要定义区域，而无需提供解析库文件，解析库文件应该放置于/var/named/slaves/目录中;
+        4. 主服务器得允许从服务器作区域传送;
+        5. 主从服务器时间应该同步，可通过ntp进行;   
 
+    rndc:
+     rndc --> rndc (tcp/953)
+     rndc COMMAND
+     COMMAND:
+        reload: 重载主配置文件以及区域解析文件
+        reload zone: 重载区域解析库文件
+        retransfer zone:  手动启动区域传送过程，而不管序列号是否增加;
+        notify zone: 重新对去区域传送进行通知
+        reconfig: 重载主配置文件
+        querylog: 开启或关闭查询日志;
+        trace: 递增debug级别
+        trace LEVEL: 指定使用的级别
+            

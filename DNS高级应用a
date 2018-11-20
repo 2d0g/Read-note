@@ -1,0 +1,53 @@
+DNS and BIN
+    子域授权: 分布式数据库
+    正向解析区域子域方法:
+
+        定一个子区域:
+            ops.magedu.com. IN  NS  ns1.ops.magedu.com.
+            ops.magedu.com. IN  NS  ns2.ops.magedu.com.
+            ns1.ops.magedu.com.     IN  A  1.1.1.1
+            ns2.ops.magedu.com.     IN  A  1.1.1.2
+
+            fin.magedu.com. IN  NS  ns1.fin.magedu.com.
+            fin.magedu.com. IN  NS  ns2.fin.magedu.com.
+            ns1.fin.magedu.com.     IN  A  3.1.1.1
+            ns2.fin.magedu.com.     IN  A  3.1.1.2
+        定义转发服务器:
+            注意:  被转发的服务器需要能够为请求者做第归，否则转发请求不予进行
+
+            (1) 全局转发: 凡是非本机所负责解析的请求，统统转发给指定的服务器
+                Options {
+                    forward{first|only}
+                    forwarders
+                }
+            (2) 区域转发: 仅转发对特定的区域请求至某服务器
+                zone "ZONE_NAME" IN {
+                    type forward;
+                    forward{first|only}
+                    forwarders
+            }
+            注意: 关闭dnssec功能
+                dnssec-enable no;
+                dnssec-validation no;
+        bind中基础的安全相关的配置:
+            acl: 把一个或多个主机归并为一个集合，并通过一个统一的名称调用;
+                acl acl_name {
+                    ip:
+                    ip:
+                    net/prelem;
+                }
+                示例:
+                    acl_mynet {
+                        172.16.0.0/16;
+                    }
+                bind有四个内置的acl:
+                    none:没有一个
+                    any: 任意一个
+                    local: 本机
+                    localnet: 本机的ip同掩码运算后得到的网络地址:
+                注意: 只能先定义后使用，因此，其一段定义在配置文件中的options的前面
+            访问控制的指令:
+                allow-query {}，允许查询的主机，白名单
+                allow-transfer {}, 允许传送的主机，
+                allow-recursion {}, 允许递归的主机，
+                allow-update { none }
