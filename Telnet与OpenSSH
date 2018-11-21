@@ -1,0 +1,54 @@
+OpenSSH:
+    telnet: 23, 23/tcp
+    ssh: secure shell, protocol, 22/tcp,  安全的远程登陆
+    OpenSSH: ssh协议的开源实现，
+        dropbear: 另一个开源实现;
+
+    SSH协议版本:
+        v1: 基于CRC-32 做MAC，不安全: man-in-middle
+        v2: 双方主机协议选择安全的MAC方式
+            基于DH算法做密钥交换，基于rsa或dsa算法实现身份认证;
+        两种方式的用户登陆认证:
+            基于password
+            基于key
+    OpenSSH:
+        C/S
+            C: ssh, scp, sftp
+                windows客户端:
+                    xhell, putty, securecrt, sshsecureshellclient
+
+            S: sshd
+        客户端组件:
+            ssh, 配置文件: /etc/ssh/ssh_config
+            格式: ssh [user]@host [COMMAND]
+                ssh [-l user]@host [COMMAND]
+                 -p port: 指定特定端口
+            基于密钥的免密登陆:
+                (1) 在客户端生成密钥对: ssh-keygen -t rsa [-p ''] [-f "~/.ssh/id_rsa"]
+                (2) 把公钥传输到对应的服务器: ssh-copy-id [-i identity_file] [user@]machine
+                (3) 测试
+                注意: 公钥文件权限: 600
+            scp命令:
+                scp [options] SRC... DEST/
+                存在两种情形:
+                    PULL: scp [options] [user@]host:/PATH/TO/SOMAFILE /PATH/TO/SOMAFILE
+                    PUSH: scp [options] /PATH/TO/SOMAFILE [user@]host:/PATH/TO/SOMAFILE
+                        常用选项:
+                            -r: 第归复制
+                            -p: 保持原文件的属性信息
+                            -q: 静默模式
+                            -P: 指明端口
+                            -X: 支持x11转发 
+                            -Y: 支持信任的x11转发
+            sftp:
+                sftp [user@]host
+                sftp> help
+
+        服务器端:
+            sshd, 配置文件: /etc/ssh/sshd_config
+            常用参数:
+                Port 22022
+                ListenAddress ip
+                PermitRootLogin no
+                UseDNS no
+

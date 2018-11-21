@@ -1,0 +1,36 @@
+bind view:
+    视图:
+        一个bind服务器可定义多个view，每个view可以中可定义一个或多个zone;
+        每个view用来匹配一组客户端;
+        多个view内可能需要对同一个区域进行解析，但使用不同的区域解析库文件;
+            view VIEW_NAME {
+                match-clients { };
+            }
+            注意: 
+                (1) 一旦启用了view, 所有的zone都只能定义在view;
+                (2) 仅有必要在匹配到允许第归请求的客户端所在view中定义根区域;
+                (3) 客户端请求到达时，是自上而下检查每个view所服务的客户端列表;
+            CDN: 
+            智能DNS:
+                dnsod
+                dns.la
+    编译安装bind:
+        isc.org
+        bind-9.9
+            # tar xf
+            # cd 
+            # groupadd -r -g 53 named
+            # useradd -r -u 53 -g 53 named
+            # ./configure --prefix=/usr/local/bind9 --sysconfdir=/etc/named/ --disable-ipv6 --disable-chroot --enable-threads
+            # make 
+            # make install
+        以及rndc的配置
+            rndc.conf: 配置文件
+            rndc-confgen: 生成配置文件
+                -h: 帮助
+                rndc-confgen 
+                rndc-confgen -r /dev/urandom
+
+                rndc-confgen -r /dev/urandom > /etc/named/rndc.conf
+                编辑添加生成的另一部分至 /etc/named/named.conf
+                
