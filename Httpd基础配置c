@@ -1,0 +1,79 @@
+httpd-2.2
+    15、curl命令:
+        -A/--user-agent <string> 设置用户代理发送给服务器
+        -basic 使用HTTP基本认证
+        --tcp-nodelay 使用TCP_NODELAY选项
+        -e/--referer <URL> 来源网址
+        --cacert <file> CA证书(SSL)
+        --comressed 要求返回是压缩格式的内容
+        -H/--header <line> 自定义首部信息传递给服务器
+        -I/--head 只显示响应报文首部信息
+        --limit-rate <rate> 设置传输速度
+        -u/--user <user[:passeord]> 设置服务器的用户和密码
+        --0/--http1.0 使用http1.0
+    
+        elinks:
+        elinks [OPTION] [URL...]
+            -dump: 不进入交互模式，而直接将URL的内容输出至标准输出:
+    16、使用mod_deflate模块压缩页面优化传输速度
+
+        适用场景:
+            (1) 节约带宽，额外消耗CPU; 同时可能有些较老浏览器不支持:
+            (2) 压缩适于压缩的资源，例如文本文件
+
+        SetOutputFilter DEFLATE
+        # mod_deflate configuration
+        # Restrict compression to these MIME types
+    17、https
+        http over ssl = https 443/tcp
+            ssl: v3
+            tls: v1
+                注意: SSL会话是基于ip地址创建，所以单ip的主机上，仅可以使用一个https虚拟主机
+
+        站点证书有效性
+            日期检测
+            签名颁发者可信度检测
+            签名检测
+            站点身份检测
+        配置httpd支持https:
+            (1) 为服务器申请数字证书:
+                (a) 创建私有CA
+                (b) 在服务器创建证书签署请求
+                (c) CA签证
+            (2) 配置httpd支持ssl，及使用证书
+            # yum -y install mod_ssl
+
+            配置文件: /etc/httpd/conf.d/ssl.conf
+                DocumentRoot
+                ServerName 
+                SSLCertificateFile
+                SSLCertificatekeyFile
+            (3) 测试基于https访问响应的主机
+                # openssl s_client [connect host:port] [-cert filename] [-CApath directory] [-CAfile filename]
+                
+    18、httpd自带的工具程序
+        htpasswd: basic认证基于文件实现时，用到的账号密码文件生存工具
+        apachectl: httpd自带的服务控制脚本，支持start, stop
+        apxs: 由httpd-devel包提供的，扩展httpd使用第三方模块的工具
+        rotatelogs: 日志滚动工具
+        
+        suexec:
+            访问某些有特殊权限配置的资源时，临时切换至指定用户运行
+        ab: apache benchmark
+    19、http压力测试工具
+        ab
+        webbench
+        http_load
+
+        jmeter
+        loadrunner
+
+        tcpcopy
+        
+        ab [OPTION] URL
+            -n: 总的请求数
+            -c: 模拟的并发数
+            -k: 以持久连接模式测试
+
+            ulimit -n : 调整当前用户所同时打开的文件数
+            

@@ -1,0 +1,159 @@
+    MPM: 
+        prefork:多进程模型，一个进程响应一个请求
+        worker: 多线程模型，(多进程生成，一个进程生成多个线程)，一个线程响应一个请求;
+        event: 事件驱动模型，一个线程响应多个请求;
+    并发服务器响应请求:
+        单进程I/O模型
+        多进程I/O模型
+        复用的I/O模型:
+            多线程模型
+            事件驱动
+        复用的多进程I/O模型
+Httpd:
+    Centos 6: 2.2
+    Centos 7: 2.4
+    
+        安装方式
+            rpm 
+            编译
+        Centos 6:
+            程序环境
+                配置文件:
+                    /etc/httpd/conf/httpd.conf
+                    /etc/httpd/conf.d/*.conf
+                服务脚本:
+                    /etc/rc./init.d/httpd
+                    配置文件: /etc/sysconfig/httpd
+                主程序文件:
+                    /usr/sbin/httpd
+                    /usr/sbin/httpd.event
+                    /usr/sbin/httpd.worker
+                模块路径:
+                    /usr/lib64/httpd/modules/
+                日志文件:
+                    /var/log/httpd
+                        access_log: 访问日志
+                        error_log: 错误日志
+                站点文档目录:
+                    /var/www/html
+                配置文件的组成信息:
+                    ～] grep "Section" /etc/httpd/conf/httpd.conf
+                    ### Section 1: Global Environment
+                    ### Section 2: 'Main' server configuration
+                    ### Section 3: Virtual Hosts
+                    
+                    配置格式: directive value
+                    directive: 不区分字符大小写
+                    value: 为路径时，取决于文件系统;
+            常用配置:
+                1、修改监听端口
+                    Listen [ip:]PORT
+                    省略ip表示监听本机所有ip; Listen可重复出现多次:
+                2、持久连接
+                    Persisent Connection: 建立连接，每个资源获取完成后不会断开连接，而是继续等待其他的请求完成;
+                        如何断开?
+                            数量限制: 100
+                            时间限制: 可配置
+                        副作用: 对并发访问量较大的服务器，持久连接功能会使有些请求得不到响应;
+                        折衷: 使用较短的持久连接时间， http-2.4 支持毫秒级响应
+                    
+                    非持久连接
+                        KeepAlive Off|On
+                        MaxKeepAliveRequests #
+                        KeepAliveTimeout #
+                    
+                    测试:
+                        telnet Host PORT
+                        GET /URL HTTP/1.1
+                        Host: HOSTNAME OR IP
+                3、MPM
+                    Multipath Process Module: 多道处理模块
+                        prefork, worker, event
+                    httpd-2.2不支持同时编译多个模块，所以只能编译时选定一个；rpm安装的包提供三个二进制程序文件，分别实现对于不同MPM机制的支持
+                        确认方法:
+                            ps axu | grep httpd
+
+                    默认为/usr/sbin/httpd, 其使用prefork
+                        查看模块列表:
+                            查看静态编译的模块:
+                            # httpd -l | httpd.event -l | httpd.worker -l
+                            Compiled in modules:
+                                core.c
+                                prefork.c
+                                http_core.c
+                                mod_so.c
+                            查看静态及动态装载的模块
+                            # httpd -M
+                    更换使用的httpd程序:
+                        vim /etc/sysconfig/httpd
+                            HTTPD=
+                        重启文件生效
+                    prefork的配置:
+                        <IfModule prefork.c>
+                        StartServers       8
+                        MinSpareServers    5
+                        MaxSpareServers   20
+                        ServerLimit      256
+                        MaxClients       256
+                        MaxRequestsPerChild  4000
+                        </IfModule>
+                    worker的配置:
+                        <IfModule worker.c>
+                        StartServers         4 ,服务器主进程启动时启动的进程数
+                        MaxClients         300 ,最大并发请求
+                        MinSpareThreads     25 ,最少空闲25个线程
+                        MaxSpareThreads     75 ,最多空闲75个线程
+                        ThreadsPerChild     25 ,每个进程启动25个线程
+                        MaxRequestsPerChild  0 ,
+                    PV,UV
+                        PV: Page View
+                        UV: User View
+                            独立IP量
+                4、DSO: 
+                    配置指令实现模块加载
+                        LoadModule <mod_name> <mod_path>
+                        
+                        模块路径可使用相对地址
+                            相对ServerRoot(/etc/httpd)指向的路径而言
+                                /etc/httpd/modules/
+                5、定义'Main' server的文档页面路径
+                    DocumentRoot
+                    文档路径映射:
+                        DocumentRoot指向的路径为URL路径的起始位置
+                            DocumentRoot "/var/www/html"
+                6、站点访问控制
+                    可基于两种类型的路径指明对那些资源进行访问控制
+                        文件系统路径: 
+                            <Directory ""> </Directory>
+                            <File ""> </File>
+                            <FileMatch ""> </FileMatch>
+                        URL路径:
+                            <location ""> </location>
+                            ...
+
+                    访问控制机制:
+                        基于来源地址:
+                        基于账号
+                7、Directory中"基于来源地址"实现访问控制
+                    (1) Options
+                        所有可用特性: Indexes Includes FollowSymLinks SymLinksifOwnerMatch ExecCGI MultiViews
+                                None, All
+                            Indexes: 索引;
+                            FollowSymLinks: 允许跟踪符号链接文件
+                        AllowOverride 
+                            None
+                    (2) 基于来源地址的访问控制
+                        Order: 检查次序
+                            Order allow,deny (白名单) 后面一项为默认，下一行反之亦然
+                            Order deny,allow
+                        Allow from
+                        Deny from
+                        来源地址:
+                            ip
+                            NetAddr:
+                                172.16
+                                172.16.0.0
+
+                8、定义默认主页面
+                    DirectoryIndex index.html index.html.var
+                    

@@ -1,0 +1,174 @@
+MariaDB的特性:
+    插件式存储引擎: 存储管理器有多种实现版本，功能和特性可能均略有差别，用户可根据需要灵活选择
+
+    存储引擎也称为"表类型":
+    (1) 更多的存储的存储引擎
+    
+    MyISAM --> Aria,
+    InnoDB --> XtraDB
+    (2) 诸多扩展和测试组建
+    (3) 提供了较多的测试组件
+    (4) truly open source
+安装和使用MariaDB
+    Centos 7 直接安装
+    Centos 6 通用安装
+        (1) 准备数据目录
+            /mydata/data
+        (2) 配置mariadb
+            # groupadd -r -g 306 mysql
+            # useradd -r -g 306 -u 306 mysql
+            # tar xf mariadb-VERSION.tar.xz -C /usr/local
+            # ln -sv 
+            # cd /usr/local/mysql
+            # chown - R root:mysql ./*
+            # scripts/mysql_install_db --datadir=/mydata/data --user=mysql
+            # cp super-files/mysql.server /etc/rc.d/init.d/mysqld
+            # chkconfig -add mysqld
+        (3) 准备配置文件
+            配置文件查找格式: 类ini格式，为各程序均通过但个配置文件提供配置信息:
+                [prog_name]
+            配置文件查找次序:
+                /etc/my.cnf --> /etc/mysql/my.cnf --> --default-extra-file=/PATH/TO/CONF_FILE -->~/.my.cnf
+                # cp support-files/my-large.cnf /etc/mysql/my.cnf
+
+                添加三个选项:   
+                datadir = /mydata/data
+                innodb_file_per_table  on
+                skip_name_resolve = on
+MariaDB的组成:
+    C:
+        mysql: CLI交互式客户端程序
+        mysqldump, mysqladmin...
+    S:
+        mysqld_safe
+        mysqld
+        mysqld_multi
+服务器监听的两种socket地址
+    ip socket: 监听在tcp的3306端口上，支持远程通信
+    unix socket: 监听在sock文件上(/tmp/mysql.sock, /var/lib/mysql/mysql.sock), 仅仅支持本地通信
+        server: localhost, 127.0.0.1
+
+命令交互式客户端程序: mysql
+    mysql 
+        -uUSERNAME :用户名
+        -hHOST: 服务器主机
+        -pPASSWORD: 用户密码
+
+        注意:
+            mysql用户账号由两部分组成: 'USERNAME'@'HOST': 
+            其中HOST用于限制此用户可通过那些主机远程连接mysql服务;
+                支持使用的通配符:
+                    %: 匹配任意长度的任意字符
+                    _: 匹配任意单个字符
+        命令:
+            客户端命令: 本地执行
+                mysql> help
+                每个命令都有完整形式和简写格式:
+                    status = \s
+
+            服务端命令: 通过mysql协议发往服务器执行并取回结果;
+                每个命令都必须有命令结束符';' 
+    关系型数据库的常见组件:
+        数据库: databases
+        表: table
+            行: row
+            列: column
+        索引: index
+        视图: view
+        用户: user
+        权限: privilege
+
+        存储过程: procedure
+        存储函数: function
+        触发器: trigger
+        时间调度器: event scheduler
+
+    mysql_secure_installation: 安全初始化
+SQL语句:
+    DDL: Data Defination Language
+        CREATE, DROP, ALTER(修改)
+    DML: Date Manipulation Language (操作语言)
+        INSERT， DELECT， UPDATE(修改)，SELECT
+        GRANT，REVOKE
+    数据库:
+        creat databases|schema "DB_NAME"
+        drop databases|schema "DB_NAME"
+
+        查看字符集: show character set; 
+        查看排序规则: show collation; 
+
+        获取命令使用帮助:
+            mysql> help KEYWORD;
+        查看:
+            mysql> show databases;
+
+    表:
+        create table [IF NOT EXISTS] TB_NAME (col1 datatype 修饰符，col2 datatype 修饰符) ENGINE=""
+        
+        查看引擎种类: show engines;
+        查看表: show  tables [from db_name];
+        查看表结构: desc [db_name.]tb_name;
+        删除表: 
+        drop table [IF EXISTS] tb_name;
+
+        数据类型:   
+            字符型
+                定长字符型: CHAR(#), BINARY(#): 区分字符大小写
+                变长字符型: VARCHAR(#), VARBINARY(#)
+                对象存储:
+                    TEXT: 不区分大小写
+                    BLOB: 区分字符大小写
+                内置类型:
+                    ENUM
+                    SET
+            数值型
+                精确数值型
+                    整型: int
+                        tinyint: 1 byte
+                        smallint: 2 bytes
+                        modiumint: 3 bytes
+                        int: 4 bytes
+                        bigint: 8 bytes
+                    十进制: decimal
+                近似数值型
+                    单精度浮点型
+                        float
+                    双精度浮点型
+                        double
+        装饰符:
+            NOT NULL: 非空约束
+            DEFAULE VALUE: 设定默认值
+
+用户账号及权限管理:
+
+    用户账号: 'user'@'host'
+        user: 用户名
+        host: 此用户访问mysql服务时允许通过那些主机远程出创建连接
+            ip、网络地址、主机名、通配符(%和_)
+        禁止检查主机名:
+            my.cnf [mysqld]
+            skip_name_resolve = yes 
+    创建用户账号:
+        CREATE USER 'username'@'host' [IDENTIFIED BY 'password'];
+    删除用户:
+        DROP USER 'username'@'host';
+    授权:
+        权限级别: 管理权限、数据库、表、字段、存储例程
+        GRNT priv_type,... ON [object_type] db_name.tb_name TO 'user'@'host' [IDENTIFIED BY 'password'];
+            priv_type: ALL [PRIVILEGES]
+            db_name.tb_name:
+                *.*: 所以数据库的表
+                db_name.*: 指定库的所有表
+                db_name.tb_name: 指定特定库的特定表
+                db_name.routine_name: 指定库的存储例程
+    查看指定用的授权:
+        SHOW GRANTS FOR 'user'@'host';
+        SHOW GRANTS FOR CURRENT_USER; 查看当前用户的权限
+    回收权限:
+            REVOKE priv_type, ... ON db_name.tb_name FROM 'user'@'host';
+
+    注意: MariaDB服务进程启动时会读取mysql库中的所有权限表至内存中
+        (1) GRANT或REVOKE等执行权限操作会保存于表中，并立即更新，MariaDB的服务进程会自动重读授权表，
+        (2) 对于不能或不能及时重读授权表的命令，可手动让MariaDB的服务进程重读授权表
+            mysql> FLUSH PRIVILEGES;
+            

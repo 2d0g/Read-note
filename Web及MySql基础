@@ -1,0 +1,91 @@
+    amp: Client --> http协议 --> httpd --> cgi协议 --> application server --> (program file) mysql协议--> mysqld
+        httpd+php
+            modules
+                httpd: prefork, libphp5.so
+                httpd event or worker: libphp5-zts.so
+            cgi协议
+            fpm
+        加速器: APC, eAccelerator, Xcache
+
+LAMP(2)
+    php:
+        php解释器
+        配置文件: /etc/php.ini, /etc/php.d/*.ini
+        配置文件(php.ini)在PHP启动时被读取，对于服务器模块版本的php,仅仅在web服务器启动时读取一次，
+        对于CGI和CLI版本，每次调用都会读取
+
+        ini:
+    
+    mariadb(mysql):
+
+        数据结构模型:层次模型、网状结构、关系模型
+            关系模型:
+                二维关系: row, column
+
+        数据库管理系统: DBMS
+            关系: Relational, RDBMS
+
+        MariaDB(MySQL):关系型数据库的一种开源实现
+        RDBMS:
+            MySQL: MySQL, MariaDB, Percona-Server
+            PostgreSQL: 简称pgsql--> EnterpriseDB
+            Oracle: 
+            MSSQL:
+        事物: 多个操作要被当作一个整体对待
+            ACID:
+                A: 原子性:
+                C: 一致性
+                I: 隔离性
+                D: 持久性
+            SQL: Structure Query Language
+                SQL解释器:
+                数据存储协议: 应用层协议，C/S
+                    S: server, 监听套结字，接受并处理客户端的应用请求
+                    C: Client
+                        程序接口
+                            CLI
+                            GUI
+                        应用编程接口
+                            ODBC: Open DataBase Connection
+        基础概念:
+            约束: constraint, 向数据表提供的数据要遵循的限制
+                主键: 一个或多个字段的组合，填入的数据必须在本表中唯一标识本行: 必须提供数据，即 NOT NULL
+                唯一键: 一个或者多个字段的组合，填入的数据必须在本表中唯一标识本行，允许为NULL
+                外键: 一个表中某字段可填入数据取决于另一个表的主键已有的数据
+                检查性
+            索引:
+                将表中的一个或多个字段的的数据复制一份另存，并且此需要按特定次序排序存储
+            关系运算:
+                选择: 挑选出符合条件的部分行
+                投影: 挑选出符合条件的字段
+                连接: 
+        数据抽象:
+            物理层: 决定数据的存储格式，即RDBMS再磁盘上如何组织文件
+            逻辑层: 描述DB存储什么数据，以及数据间存在什么样的关系
+            视图层: 描述DB中的部分数据
+        关系模型的分类:
+            关系模型
+                实体-关系模型
+                基于对象的关系模型
+                半结构化的关系模型
+    MariaDB:
+        安装Mysql:
+            源代码: 编译安装
+            二制作格式的程序包: 展开至特定路径，并经过简单配置后即可使用
+            程序包管理器提供的程序包:
+                rpm
+                    OS Vendeor
+                    项目官方
+                deb
+
+
+
+
+
+
+
+
+
+
+
+            

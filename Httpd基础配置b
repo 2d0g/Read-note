@@ -1,0 +1,111 @@
+                9、 日志设定
+                        错误日志:
+                            Errorlog logs/error_log
+                            LogLevle warn
+                                debug, info, notice, warn, error, crit, alert, emerg.
+                        访问日志:
+                            CustomLog logs/access_log combined
+                            LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+                                %h: 客户端ip地址
+                                %l: ,- 表示为空
+                                %u: 认证用户，
+                                %t: 服务器收到请求时的时间
+                                %r: 请求报文的首行时间，Frist line of request
+                                %>s: 响应状态码
+                                %b: 响应报文大小，单位是字节，不包括首部
+                                %(Referer): 请求报文当中的"referer"的值，当前资源的访问入口，即从那个页面访问而来。
+                                %(User-Agent)i: 请求报文中的"User-agent"首部的值，即浏览器客户端或其他
+                10、路径别名
+                        DocumentRoot "/www/htdocs"
+
+                        Alias: /URL/ "/PATH/TO/SOMEFILE/"    
+                11、设定默认字符集:
+                         AddDefaultCharset UTF-8
+                12、基于用户的访问控制
+                    认证质询:
+                        www-Authenticate: 响应码为401,拒绝客户端请求，并说明要求客户端提供账号和密码;
+                    
+                    认证:
+                        Authorization: 客户端填入账号和密码后再次发送请求，认证通过后发送响应内容
+                        认证类型:
+                            basic: 明文
+                            digest: 消息摘要
+
+                    安全域: 需要用户认证后方能访问的路径
+                        应通过名称对其进行识别，并用于告知用户认证的原因
+                    用户的账号和密码存储路径
+                        虚拟账号: 仅用于某服务时用到的认证标识
+                        存储:
+                            文本文件
+                            SQL数据库
+                            ldap
+                            nis
+                    basic认证:
+                        (1) 定义安全域
+                            <Directory "">
+                                Options
+                                AllowOverride None
+                                AuthType Basic
+                                AuthName "STRING"
+                                AuthUserFile "/PATH/TO/HTTPD_USER_PASSWD_FILE"
+                                Require user user1 user2 ...
+                            </Directory>
+
+                                允许账号文件中的所有用户登陆访问:
+                                    Require valid-user
+
+                        (2) 提供账号和密码存储(文本文件)
+                            使用htpasswd [options] passwdfile username
+                                htpasswd -c -m /PATH/TO/FILE USER
+                                -c: 自动创建passwdfile, 因此仅仅第一次，之后使用会覆盖之前的内容
+                                -m: md5加密用户密码
+                                -s: sha1加密用户密码
+                                -D: 删除指定用户
+
+                        (3) 实现基于组进行认证
+                            <Directory "">
+                                Options
+                                AllowOverride None
+                                AuthType Basic
+                                AuthName "STRING"
+                                AuthUserFile "/PATH/TO/HTTPD_USER_PASSWD_FILE"
+                                AuthGroupFile "/PATH/TO/HTTPD_GROUP_PASSWD_FILE"
+                                Require group group1 group2 ...
+                            </Directory>
+
+                            要提供: 账号文件和组文件
+                                组文件: 每一行定义一个组
+                                    GRP_NAME: user user1 user2
+                13、虚拟主机:
+                    有三种实现方案:
+                        基于ip
+                            为每个虚拟主机准备至少一个ip地址
+                        基于port
+                            为每个虚拟主机准备至少一个专用的port,事件中很少使用
+                        基于hostname
+                            为每个虚拟主机准备至少一个专用的hostname
+
+                        可混合使用上述三种方式中的任意方式:
+                            
+                    注意: 一般的虚拟主机莫与中心主机混用，所以，要使用虚拟主机，先禁用中心主机
+                        禁用中心主机: 注释DocumenRoot
+                    每个虚拟主机都有专用配置:
+                        <VirtualHost "IP:PORT">
+                            ServerName
+                            DocumentRoot ""
+                        </VirtualHost>
+                            ServerAlias: 虚拟主机的别名
+                            Errorlog:
+                            CustomLog:
+                14、内置的status页面
+                    <Location /server-status>
+                        SetHandler server-status
+                        Order deny,allow
+                        Deny from all
+                        Allow from 172.16
+                    </Location>
+
+                    实现: 基于账号实现访问控制功能
+
+
+                

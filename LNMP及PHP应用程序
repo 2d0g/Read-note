@@ -1,0 +1,37 @@
+    Centos 7:
+        程序包: httpd, php, php-mysql, mariadb-server
+            注意: php要求httpd使用prefork 模块
+        启动服务:
+            systemctl start httpd.service
+            systemctl start mariadb.service
+    Centos 6:
+        程序包: httpd, php, php-server, mysql-server
+        启动服务:
+            service httpd start
+            service mysqld start
+        测试:
+            php程序执行环境:
+                test.php
+                    <?php
+                        phpinfo();
+                    ?>
+            测试php与mysql通信
+                <?php   
+                    $conn = mysql_connect('HOST','USERNAME','PASSWORD') 
+                    if ($conn)
+                        echo "Ok"
+                    else
+                        echo "Failure";
+                    mysql_close();
+                ?>
+        php解释器如何与mariadb交互:
+            解释器无需与MariaDB交互，那些用到存储系统的程序才需要与数据存储交互;
+
+            存储系统:
+                文件系统: 文件
+                SQL:   MariaDB, Oracle, MSSQL, ...
+                NoSQL: redis, mangodb, hbase,
+    关于PHP:
+        
+
+            

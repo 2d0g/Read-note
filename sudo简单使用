@@ -1,0 +1,44 @@
+    su: Switch User
+        su -l user -c 'COMMAND'
+        su -l root -c 'COMMAND'
+    sudo: 
+        授权之后，能够让某用户以另外一个用户的身份运行命令;
+        sudo visudo 编辑/etc/sudoers
+        配置文件: /etc/sudoers
+            who: 运行命令者的身份
+            where: 通过那些主机
+            (whom): 以那个用户的身份
+            which: 运行那些命令
+
+            users host=(runas) commands
+                users:
+                    username
+                    #uid
+                    user_alias
+                    %group 
+                    %*gid
+                host:
+                    ip
+                    hostname
+                    netaddr
+                commands:
+                    command name
+                    directory
+                    sudoedit
+
+            Alias_Type NAME = item1, item2, ...
+                    NAME: 必须使用全大写字母
+                    Alias_Type:
+                        User_Alias
+                        Host_Alias
+                        Runas_Alias
+                        Cmnd_Alias
+                Cmnd_Alias USERADMINS = /usr/bin/useradd, /usr/sbin/usermod, /usr/bin/passwd [a-zA-Z]*, !/usr/bin/passwd root
+        # sduo [-u user] COMMAND
+            -u user: 默认为root;
+            -k: 清除此前记录用户的密码
+
+                    
+
+
+
