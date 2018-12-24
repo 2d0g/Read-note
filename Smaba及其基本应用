@@ -1,0 +1,54 @@
+samba:
+    smb: Service Message Block
+    CIFS: Common Internal File System (协议)
+
+    137/udp, 138/udp, 139/tcp, 445/tcp
+        NetBIOS: Windows基于主机实现互相通信的机制
+            15个字符
+        samba:
+            rmbd: netbios
+            smbd: cifs
+            winbindd: 
+        UNC路径: \\SERVER\shared_name
+
+    交互式数据访问:
+        # smbclient -L HOST -U USERNAME 
+            获取共享文件信息之后，
+        #  smbclient //172.16.26.27/tools -U test
+    基于挂载的方式访问:
+        # mount -t cifs //HOST/PATH /mount_point -o username=USERNAME,password=PASSWORD
+    
+    服务器:
+        # yum -y install samba
+        服务脚本
+
+        主配置文件:
+            /etc/samba/smb.conf
+        samba用户:
+            账号: 都是系统用户， /etc/password
+            密码: samba服务自有密码文件
+            将系统用户添加为samba的命令，smbpasswd
+            
+            smbpasswd:
+                -a Sys_User: 添加系统用户为samba用户
+                -d: 禁用
+                -e: 启用
+                -x: 删除
+    配置文件:
+        smb.conf
+            全局设定
+            特定共享的设定
+                私有家名录
+                打印机共享
+                自定义共享
+        自定义共享:
+        [shared_name]
+        path = /path/to/shared_directory
+        comment = Comment String
+
+        测试配置文件及其信息:
+            
+
+
+
+

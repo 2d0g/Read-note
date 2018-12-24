@@ -1,0 +1,118 @@
+MariaDB or MySql
+    DBMS
+    RDBMS: 关系型数据库
+        C/S，专有协议
+        关系模型: 表(行，列)，二维关系
+
+        范式: 第一，第二， 第三
+        关系运算:
+            选择
+            投影
+
+        数据库: 表，索引，视图(虚图)
+            SQL: 结构化查询语言
+                DDL数据定义语言，DML数据操纵语言，DQL数据查询语言, DCL数据查询语言
+                编程接口
+                    存储过程
+                    存储函数
+                    触发器
+                    事件调度器
+                    过程式编程: 选择、循环
+        三层模型:
+            物理层
+            逻辑层
+            视图层
+        解决方案:
+            Oracle, Sybase, Infomix
+            MySql, MariaDB, PostgreSQL, SQLite
+        MySql --> 5.1 --> 5.5 --> 5.7
+        MariaDB
+            插件式存储引擎
+            单进程多线程
+                连接线程
+                守护线程
+        配置文件: 集中式的配置，能够为mysql的各应用程序提供配置信息
+            [mysqld]
+            [mysqld_safe]
+            [mysqld_multi]
+
+            查询路径: /etc/my.cnf --> /etc/mysql/my.cnf --> $MYSQL_HOME/my.cnf --> --default-extra-file=/path/to/somedir/my.cnf --> ~/.mysql
+        
+        安装方法:
+            os vendor: rpm
+            MYSQL:
+                rpm
+                展开可用
+                源码
+            安装后的设定
+                (1): 为所有root用户设定密码
+                    mysql> SET PASSWD
+                    mysql> update mysql.user SET passwd=PASSWD("your_pass") while cluase;
+                    # mysqladmin
+                (2) 删除匿名用户
+                    mysql> DROP USER ''@'localhost';
+                    
+                    上述俩步骤可运行命令: mysql_secure_installation
+
+                (3) 建议关闭主机名反解功能
+            元数据数据库: mysql
+                user, host等
+            mysql --> mysqld
+                客户端程序:
+                    mysql: 交互式的CLI工具
+                    mysqldump: 备份工具，基于mysql协议的向mysqld发起查询请求，并将所查询的所有数据转换成insert等写操作语句保存在文本文件中
+                    mysqladmin: 基于mysql协议管理mysqld
+                    mysqlimport: 数据导入工具
+                非客户端类的管理工具:
+                
+                如何查看mysqld or mysql 的默认配置
+                    # mysql --print-defaults
+                    # mysqld --print-defaults
+                
+                客户端类程序的通用选项:
+                    -u, --user=
+                    -h, --host=
+                    -p, --password=
+                    -P, --port=
+                    --protocoL=
+                    -S，--socket=
+                    -D, --database=
+                    -C, --compress
+
+                    mysql -e 'SQL'
+                mysql的使用模式:
+                    交互式模式
+                        可运行命令由两类:
+                            客户端命令:
+                                \h, help
+                            服务器端命令:
+                                SQL, 需要语句结束符;
+                    脚本模式:
+                        # mysql -uUSERNAME -hHOST -pPASSWORD < /path/from/somefile.sql
+                        mysql> source /path/to/somefile.sql
+                服务器(mysqld): 工作特性有多种定义方式
+                    命令行选项
+                    配置文件参数
+                        
+                        获取可用参数列表:
+                            mysqld --verbose --help
+                    获取运行中的mysql进程使用各服务器参数及其值
+                        mysql> SHOW GLOBAL VARIABLES;
+                        mysql> SHOW SESSION VARIABLES;
+
+                        注意: 其中有参数支持运行时修改，会立即生效; 有些参数不支持，且只有通过修改配置文件并重启服务器程序
+                              有些参数作用域是全局的，且不可改变的，有些可以为每个用户提供单独的配置
+
+                    修改服务器变量的值:
+                        mysql> help SET
+                        全局:
+                            mysql> SET GLOBAL system_var_name=value;
+                            mysql> SET @@GLOBAL.system_var_name=value;
+
+                        SESSION:
+                            mysql> SET [SESSION] system_var_name=value;
+                            mysql> SET @@[SESSION.]system_var_name=value;
+                    状态变量: 用于保存mysqld运行程序中的统计数据的变量
+                        mysql> SHOW GLOBAL STATUS;
+                        mysql> SHOW [SESSION] STATUS;
+

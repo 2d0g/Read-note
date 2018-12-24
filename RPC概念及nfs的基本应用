@@ -1,0 +1,50 @@
+NFS: Network File System
+    传统意义上，文件系统在内核中实现
+    rpc:  远程过程调用，函数调用(远程主机上的函数)
+        一部分功能由本地程序完成，另一部分由远程主机上的函数完成
+        Remote Procedure Call Prococol
+
+        单结构数据:
+            XML: eXtended Mark Language
+            JSON: 
+            http: RESTful
+    NFS: Sun
+        基于IP的认证，
+        RPC: tcp、upd/2049
+            monutd: 半随机
+        
+    
+
+    NIS: Network Intormation System
+        身份认证: 在远程服务器进行
+
+    RPC服务: portmapper
+        rpcinfo: report RPC information
+    nfs服务器: nfsd, mountd, imapd
+
+    查看nfs服务器端共享的文件系统:
+        showmount -e NFSSERVER_IP
+    挂在NFS文件系统:
+        mount -t nfs SERVER:/PATH/TO/SHAREDFS /path/to/monut_port
+    /etc/exports 配置
+        文件系统    客户端(选项) 客户端(选项)
+        options:
+            rw: 允许客户机读/写访问，缺省为只读ro
+            secure: 缺省选项，使用了1024以下的端口，指定insecure 禁用这个选项
+            async: 改进性能，防止文件缺失
+            
+            用户映射条件选项
+                root_sqaush: 不允许root用户访问挂在上来的nfs卷，缺省选项
+                no_root_squash:
+                all_squash:他会限制所有的UID和GID，只使用匿名用户，缺省是no_all_squash
+                anonuid和anongid: 这俩个选项将匿名UID和GID修改成特定用户和组账号
+    客户端常用命令及其选项:
+        exports:  维护exports文件导出的文件系统表的专用工具
+            export -ar: 重新导出所有的文件系统
+            export -au: 关闭导出的所有文件系统
+            export -u FS: 关闭指定的导出文件系统
+    开机自动挂载
+        /etc/fstab
+        Server:/PATH/TO/EXPORTED_FS /mount_point    nfs     defaults,_netdev    0 0
+        
+

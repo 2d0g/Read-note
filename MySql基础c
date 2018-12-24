@@ -1,0 +1,75 @@
+SQL: ANSI SQL
+    SQL-86, SQL-89, SQL-92, SQL-99, SQL-03
+MySql 数据类型:
+    字符型
+    数值型
+    日期时间型
+    内建类型: ENUM, SET
+        
+
+        日期时间型:
+            DATE
+            TIME
+            DATETIME
+            TIMESTAWP
+            YEAR(2), YEAR(4)
+            日期修饰符:
+                NULL
+                NOT NULL
+                DEFAULT
+
+        整形数据修饰符:
+            NOT NULL
+            NULL
+            DEFAULT NUMBER
+
+            AUTO_INCREMENT:
+                UNSIGNED
+                PRIMARY KEY|UNIQUE KEY
+                NOT NULL
+
+                mysql> SHOW LAST_INSERT_ID();
+            
+    SQL MODE: 定义mysqld对约束的响应行为;
+        修改方式:
+            mysql> SET GLOBAL sql_mode='MODE';
+            mysql> SET @@global.sql_mode='MODE';
+
+            需要修改权限: 仅仅对创建后的会话有效，对已经建立的会话无效;
+            mysql> SET SESSION sql_mode='MODE';
+            mysql> SET @@session.sql_mode='MODE';
+        主要MODE: 
+            ANSI                ：宽松模式，对插入数据进行校验，如果不符合定义类型或长度，对数据类型调整或截断保存，报warning警告
+            TRADITIONAL         ：严格模式，当向mysql数据库插入数据时，进行数据的严格校验，保证错误数据不能插入，报error错误。用于事物时，会进行事物的回滚
+            STRICT_TRANS_TABLES ：严格模式，进行数据的严格校验，错误数据不能插入，报error错误
+        SQL: DDL, DML]
+            DDL: 数据定义语言
+                CREATE, ALTER, DROP
+                DB组件: 库，表，索引，视图，用户，存储过程，存储活动，触发器，事件调度器等
+            DML: 数据操作语言
+                INSERT，DELETE，UPDATE，DELECT
+            数据库:
+                CREATE, ALTER, DROP
+                    {DATABASE|SCHEMA}
+                    [IF EXISTS]
+                    [IF NOT EXISTS]
+            表: 二维关系
+                设计表: 遵循规范
+                定义: 字段，索引
+                    字段: 字段名，字段修饰符，修改符 
+                    约束, 索引: 应该创建在经常用作查询条件的字段上
+                        索引: 实现级别在存储引擎
+                            分类: 
+                                稠密、精疏索引
+                                B+索引、hash索引、R数索引、FULLTEXT索引
+                                聚集索引、非聚集索引
+                                简单索引、组合索引
+                创建表:
+                    (1) 直接创建
+                    (2) 通过查询现存的表创建，新表会直接插入查询到的数据
+                    (3) 通过复制现存表的结构创建，不复制数据
+                查看表结构:
+                    DESCRIBE table_name
+                    
+
+                

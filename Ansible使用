@@ -1,0 +1,90 @@
+运维自动化之Ansible
+    常用自动化运维工具: 
+        Ansible: python, Agentless, 中小型应用环境
+        Saltstack: python, 一般需要agent, 执行效率更高
+        Puppet: ruby, 功能强大配置复杂，重型，适合大型环境
+
+    学习核心
+        工作架构和原理
+            架构与原理
+            命令执行过程
+                过程: 
+                    1. 加载自己的配置文件默认为/etc/ansile/ansible.cfg
+                    2. 加载自己对应的模块，如shell
+                    3. 通过ansible调用模块或命令生成对应的临时.py文件，并将该文件传输至远程服务器的执行用户$HOME/.ansible/tmp/ansible-tmp-*/xxx.py文件
+                    4. 给文件+x执行
+                    5. 执行并返回结果
+                    6. 删除临时的py文件，sleep 0 退出
+                执行状态:
+                    绿色: 执行成并且不需要做改变的操作
+                    黄色: 执行成功并且对目标主机做出更改
+                    红色: 执行失败 
+                    紫色: 警告建议
+        模块以及常见模块学习
+            Command: 在远程主机上执行命令，默认模块，可忽略-m options
+                ansible appsers -m command -a 'service vsftpd start'
+                ansible appsers -m command -a 'echo test | passwd --stdin USERNAME' 此命令不成功，
+                    不支持$VARCHAR < > | ; & 等操作, 但可以shell模块实现
+            Shell: 和Command的命令相似，用shell执
+                ansible servs -m shell -a 'echo test | passwd --stdin USERNAME'
+                    此模块调用bash执行命令，类似于 cat /etc/httpd.conf | awk -F'|' '{print $1,$2}' &> /tmp/example.txt
+                    等复杂命令，即使使用shell也可能失败，在本地写脚本copy至远程，把需要的结果pull到执行命令的机器
+            Script: 运行脚本
+                ansible appsers -m script -a '/path/to/file.sh'
+            Copy: 从服务器复制文件到客户端
+                ansible srv -m copy -a "src=/path/to/file dest=/path/testfile owner=** mode=600 backup=yes"
+                    如目标存在，默认覆盖，此处指定先备份
+                ansible srv -m copy -a "content='test content\n' dest=/path/testfile" 利用内容选项，执行生成目标文件
+            Fetch: 与copy相反，目录可先tar
+                ansible srv -m fetch -a "src=/path/to/file dest=/path/testfile"
+            File: 设置文件属性
+                ansible srv -m file -a "path=/path/to/file owner=*** mode=775"
+                ansible web -m file -a "src=/app/testfile dest=/app/testfile-link state=link"
+            Hostname: 管理主机名
+                ansible node1 -m hostname -a "name=centos7"
+            Cron: 计划任务
+                支持时间: minute, hour, day, month, weekday
+                ansible srv -m cron -a "minute=*/5 job='/usr/sbin/ntpdate 192.168.10.1 &> /dev/null' name=Synctime" 创建任务
+                ansible srv -m cron -a 'state=absent name=Synctime' 删除任务
+            Yum: 包管理
+                ansible srv -m yum -a 'name=httpd state=latest' 安装
+                ansible srv -m yum -a 'name=httpd state=absent' 卸载
+            Service: 管理服务
+                ansible srv -m service -a "name=httpd state=stopped"
+                ansible srv -m service -a "name=httpd state=started"
+                ansible srv -m service -a "name=httpd state=reloaded"
+                ansible srv -m service -a "name=httpd state=restarted"
+            User: 管理用户
+                ansible srv -m user -a 'name=user1 comment="test usrt" uid=2048 home=/app/user1 group=root'
+                ansible srv -m user -a 'name=sysuser2 system=yes home=/app/sysuser1'
+                ansible srv -m user -a 'name=sysuser2 state=absent remove=yes' 删除用户和家目录
+            Group: 管理组
+                ansible srv -m group -a 'name=root system=yes'
+                ansible srv -m group -a 'name=testgroup state=absent'
+
+        系列命令
+            ansible-pull: 推送命令至远程
+            ansible-playbook *.yml : 运行playbook剧本
+            ansible-doc: ansible-doc -s ModuleName 查看模块帮助
+            ansible-galaxy: 
+                ansible-galaxy list: 列出已安装的galaxy
+                ansible-galaxy install geerlingguy.redis: 安装galaxy
+                ansible-galaxy remove geerlingguy.redis : 卸载删除
+            ansible-console: 可交互式执行命令，支持tab
+                cd [websers] : 切换host组列表
+                forks #: forks 10 设置并发数
+                list: 列出当前组主机列表
+                ？ or help: 列出所有内置命令
+            ansible-vault: 管理加解密的yml文件
+                ansible-vault [creat|decrypt|encrypt|rekey|view]
+                ansible-vault encrypt hello.yml 加密
+                ansible-vault decrypt hello.yml 解密
+                ansible-vault view hello.yml  查看
+                ansible-vault edit hello.yml 编辑加密文件
+                ansible-vault rekey hello.yml 修改口令
+                ansible-vault creat hello.yml 创建新文件
+
+        playbook
+
+
+ 

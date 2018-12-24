@@ -1,0 +1,78 @@
+nsswitch: network service switch (名称服务交换机制)
+    名称解析:
+        name: id
+
+        解析库:
+            文件、关系型数据库、NIS、LDAP、DNS
+
+            通用框架: 与各存储交互的实现
+                /usr/lib64/libnss*, /lib64/libnss*
+                
+                配置文件
+                    db: store1, store2, ...
+
+                    每种存储中查找的结果状态: STATUS => success | notfonud | unavail | tryagain
+                    对应于每种状态参数的行为: ACTION => return | continue
+                    host: files nis [NOTFOUND=return] dns
+                # getent database [entry]
+                nsswitch.conf
+                host: files dns 
+pam: pluggable authentication module (插入式认证模块)
+    认证服务:
+    认证库:
+        文件、关系型数据库、LDAP、NIS
+        通用框架: 与各存储交互的实现，以及多种辅助性功能
+            /lib64/security/
+        配置文件: /etc/pam.conf
+            /etc/pam.d/*.conf 
+            通常每个应用使用一个配置文件
+                配置文件中每行定义一种检查规则
+                格式:
+                    type    control     module-path     module-arguments
+
+                    type: 检查功能类别
+                        auth: 账号的认证和授权
+                        account: 与账号管理相关的非认证功能
+                        password: 用户修改密码时密码检查的规则
+                        session: 用户获取服务之前或服务使用完成之后要进行的附加性操作
+                    control: 同一个功能的多个检查之间如何组合
+                        由两种实现方式机制:
+                            1. 使用一个关键词来定义: 例如sufficient, required, requisite;
+                            2. 使用一个或多个"key=value"形式的组合表示
+                        简单机制:
+                            required :需要
+                            requisite :必要 
+                            sufficient :足够
+                            optional :可选的
+                            include : 单个文件中的相同选项
+                        复杂机制: [status1=action1,status2=action2,...]
+                            status: 返回状态
+                            action: ok, done, die, ignore, bad, reset
+                    module-path: 模块路径
+                        /lib64/security: 此路径下的模块引用时使用相对路径
+                    module-arguments: 模块参数
+模块:   
+    (1) pam_shell.so
+    (2) pam_limits.so
+        模块通过读取配置文件完成用户对系统资源的使用控制
+            /etc/security/limits.conf
+            /etc/security/limits.d/*
+
+            <domain> <type> <item> <value>
+                <domain>: 
+                    username
+                    @group
+                    *: 所有用户
+                <type>
+                    soft:
+                    hard: 由root限定，通过kernel强制生效
+                    -: 二者同时限定
+                <item>:
+                    nofile: 所能打开的文件最大数量
+                    nproc: 同时运行的最大进程数
+                    msqqeue: 使用的POSIX消息队列能够占用的最大内存空间
+                    sigpending: 所能使用的最大信号数量
+            ulimit -n #: 文件数量
+            ulimit -u #: 进程数量
+            
+
