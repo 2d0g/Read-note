@@ -1,0 +1,81 @@
+InnoDB:
+    处理大量的短期事务
+    数据存储于"表空间(table space)"中
+        (1) 所有InnoDB表的数据和索引放置于同一个表空间;
+            表空间文件: datadir定义的目录下
+                数据文件: idbdata1,idbdata2, ...
+        (2) 每个表单独使用一个表空间存储表的数据和索引
+            innodb_file_per_table=ON
+            
+            数据文件(存储数据和索引): tb1_name.idb
+            表格式定义: tb1_name.frm
+    基于MVCC(Multi-Version Concurrency Control)来支持高并发，支持所有的四个隔离级别，默认级别为REPEATABLE READ，间隙所防止幻读
+    使用聚集索引
+    支持"自适应hash索引"
+    
+    Mariadb(XtraDB) 
+        数据存储: 表空间
+        并发: MVCC, 间隙锁
+        索引: 聚集索引、辅助索引
+        性能: 预计操作，自适应hash, 插入缓冲区
+        备份: 支持热备份(Xtrabacup)
+MyISAM:
+    支持全文索引(FULLTEXT index)、压缩、空间函数(GIS); 但不支持事务，且为表级锁
+    崩溃后无法安全修复
+    
+    适用场景: 只读(或者写较少)、表较小(可接受长时间进行修复操作)
+        Aria: crash-safe
+    数据文件:  
+        tb1_name.frm: 表格式定义
+        tb1_name.MYD: 数据文件
+        tb1_name.MYI: 索引文件
+    特性:
+        加锁和并发，表级锁
+        修复: 手工或自动修复、但可能丢失数据
+        索引: 非聚集索引
+        延迟更新索引键:
+        压缩表
+    行格式: dynamic(动态的), fixed, compress, compact, redundent
+其他存储引擎:
+    CSV: 将普通的csv(字段通过逗号分割)作为mysql表使用
+    MRG_MyISAM: 将多个MyISAM表合并为一个虚拟表
+    MEMORY: 当作临时表，所有数据都保存于内存中，内存表、支持hash索引、表级锁
+        临时表
+    PERFORMANCE_SCHEMA: 伪存储引擎
+    ARCHIVE: 支持SELECT和INSERT操作，支持行级锁和专用缓存区
+    FEDHIVE: 用于访问其他远程MYSQL服务器一个代理，它通过创建一个到远程MYSQL服务器的客户端连接，并将查询传输到远程服务器执行，而后完成数据存储
+        在MariaDB上实现是FederatedX
+    MariaDB支持的其他存储引擎:
+        OQGraph
+        SphinxSE
+        TokuDB: 
+        Cassandra
+        SQUENCE
+        CONNECT
+
+并发控制:
+    锁:
+        读锁, 共享锁
+        写锁，独占锁
+    锁粒度:
+        表级锁
+        行级锁
+    锁分类:
+        隐式锁: 由存储引擎自动添加锁
+        显式锁: 手动
+    锁策略: 在锁粒度及数据安全性寻求的平衡机制
+        每种存储引擎都可以自行实现其锁策略和锁粒度
+        mysql在服务器级也实现了锁，表级锁，用户可显式请求
+        (1)LOCK TABLES
+            tbl_name [[AS] alias] lock_type
+            [, tbl_name [[AS] alias] lock_type] ...
+
+        lock_type:
+            READ [LOCAL]
+            | [LOW_PRIORITY] WRITE
+
+        UNLOCK TABLES
+        
+        (2) FLUSH [NO_WRITE_TO_BINLOG | LOCAL]
+                flush_option [, flush_option] ... [WITH READ LOCK]
+                
