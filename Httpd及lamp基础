@@ -73,7 +73,7 @@ HTTP的应用:
                         Network/Length: 172.16.0.0/16
                         Net: 172.16
                 控制特定主机(HostNAME)访问
-                    Require host HSOTNAME
+                    Require host HOSTNAME
                     Require not host HOSTNAME 
 
                     HOSTNAME:
