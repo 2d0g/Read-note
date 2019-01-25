@@ -1,0 +1,48 @@
+实现
+    1 安装包
+        yum install cobbler(EPEL) dhcp
+        systemctl enable cobblerd dhcpd httpd tftp
+        systemctl start cobblerd httpd tftp
+    2 cobbler check
+    3 vim /etc/cobbler/settings
+        server:cobbler_server_ip
+        next_server:cobbler_server_ip
+        default_password_cryptd:"xxxxxx"   # openssl passwd -1
+        manage_dhcp:1
+    4 cobbler get-loaders (联网下载配置文件)
+      cobbler sync
+    5 vim /etc/cobbler/dhcp.template
+        subnet 192.168.122.0 netmask 255.255.255.0
+        range dynamic-bootp 192.168.122.100 192.168.122.253
+
+        cobbler sync
+        systemctl restart dhcpd
+
+    6 导入ISO文件或者光盘内容
+
+        cobbler import --path=//mnt/cdrom0 --name=CentOS_7.5-x86_64 --arch=x86_64
+        cobbler import --path=//mnt/cdrom1 --name=CentOS_7.6-x86_64 --arch=x86_64
+
+        cobbler distro list
+    7 cp ks_7-5.cfg /var/lib/cobbler/kickstarts/
+        vim ks_7-5.cfg 
+        url --url=$tree
+        cobbler profile add -name=CentOS_7.5-x86_64_Desktop --distro=CentOS_7.5-x86_64  -kickstart=/var/lib/cobbler/kickstarts/ks_7-5.cfg
+        cobbler profile add -name=CentOS_7.6-x86_64_Mini --distro=CentOS_7.6-x86_64  -kickstart=/var/lib/cobbler/kickstarts/ks_7-6.cfg
+
+        编辑系统自带配置可编辑
+            cobbler profile remove --name=CentOS_7.5-x86_64
+            cobbler profile remove --name=CentOS_7.6-x86_64
+    8 web实现
+        yum -y install cobbler-web
+        systemctl restart httpd
+
+        htdigest -c /etc/cobbler/users.digest Cobbler test
+            支持多种认证方式
+                配置文件如下: /etc/cobbler/modules.conf
+                认证方法:
+                    authn_configfile
+                    authn_pam
+        web_url=https://cobbler_server_ip/cobbler_web/
+
+

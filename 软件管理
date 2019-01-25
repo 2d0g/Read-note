@@ -1,0 +1,104 @@
+包管理器
+    二进制应用程序的组成部分:
+        二进制文件、库文件、配置文件、帮助文件
+    程序包管理器:
+        debian: deb文件、dpkg包管理器
+        redhat: rpm文件、rpm包管理器
+        rpm: Redhat Package Manager
+            RPM Package Manager 
+    包命名和工具
+        包: 分类和拆包
+            主包
+            devel 开发子包
+            utils 其他子包
+            libs 其他子包
+        包之间: 可能存在依赖关系，甚至循环依赖
+
+    解决依赖包管理工具:
+        yum: rpm包管理器的前端工具
+        apt-get: deb包管理器前端工具
+        zypper: suse的rpm前端管理工具
+        dnf: Fedora18+ rpm包管理器前端工具
+    库文件
+        查看二进制程序所依赖的库文件
+            ldd /PATH/TO/BINARY_FILE
+        管理及查看本机装载的库文件
+            ldconfig  加载库文件
+            /sbin/ldconfig -p: 显示已经缓存的所有可用库文件名以及文件路径
+        映射关系
+            配置文件: /etc/ld.so.conf, /etc/ld.so.conf.d/*.conf
+            缓存文件: /etc/ld.so.cache
+    
+    程序包管理器
+    包文件组成
+        RPM包内文件
+        RPM的元数据，如名称、版本、依赖性、描述等
+        安装或卸载时运行的脚本
+            rpm -qp --scripts PackageName.rpm
+    数据库(公共): /var/lib/rpm
+        程序包名称及版本
+        依赖关系
+        功能说明
+        包安装后生成的各文件路径及校验码信息
+    rpm
+        包安装
+            --test: 测试安装，但不真正执行，即dry run模式
+            --nodeps: 忽略依赖关系
+            --replacepkgs | replacefiles : 修复覆盖rpm程序/文件
+            --nosignature:  不检查来源合法性
+            --nodigest: 不检查包完整性
+            --noscripts: 不执行程序包脚本
+                %pre: 安装前脚本；--nopre
+                %post: 安装后脚本；-nopost
+                %preun: 卸载前脚本；-nopreun
+                %postun: 卸载后脚本；-nopostun
+        包升级
+           -U| --upgrade: 若有旧包，则升级，若无，则安装
+           -F|--freshen:  若有旧包，则升级，若无，则不执行升级操作
+           --oldpackage: 降级
+           --force: 强制安装
+        包查询
+            rpm {-q|--query} [select-optons] [query-options]
+                [select-options]
+                    -a: 所有包
+                    -f: 查看指定的文件由哪个程序包安装生成
+                    -p rpmfile:  针对尚未安装的程序包文件做查询操作
+                    --whatprovides CAPABILETY: 查询指定的 CAPABILETY 由那个包所提供
+                    --whatrequires CAPABILETY: 查询指定的 CAPABILETY 由那个包所依赖
+                [query-options]
+                    --changelog: 查询rpm包的changelog
+                    -c: 查询程序的配置文件
+                    -d: 查询程序的文档
+                    -i: information
+                    -I: 查询指定的程序包安装后的生成的所有文件
+                    --scripts: 程序包自带的脚本
+                    --provides: 列出指定程序包所提供的 CAPABILETY
+                    -R: 查询指定的程序包所依赖的 CAPABILETY
+            rpm2cpio 包文件| cpio -itv 预览包内文件
+            rpm2cpio 包文件| cpio -id "*.conf" 释放包内文件
+        包卸载
+            rpm {-e|--erase} [--allmatches] [--nodeps] [--noscripts] [--notriggers] [--test] PackageName
+        包校验
+            rpm {-V|--verify} [select-options] [verify-options]
+
+                包来源合法性验证及完整性验证
+                    完整性验证: SHA256
+                    来源合法性验证: RSA
+                公钥加密
+                    对称加密: 加密、解密使用同一密钥
+                    非对称性加密: 密钥是成对的
+                            public key: 公钥，公开所有人
+                            secret key: 私钥，不能公开
+                导入所需的公钥
+                    rpm -K | checksig rpmfile 检查包的完整性和签名
+                    rpm --import /PATH/TO/rpm-gpg/RPM-GPG-KEY-CentOS-7
+                    CentOS 7发行版光盘提供
+                    rpm -qa "gpg-pubkey"
+    rpm数据库
+        数据库重建
+                /var/lib/rpm
+        rpm {--initdb|--rebuilddb}
+            initdb: 初始化
+                    如果事先不存在数据库，则重建之
+            rebuilddb: 重建已安装的包头的数据库索引目录
+            

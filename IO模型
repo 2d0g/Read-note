@@ -1,0 +1,110 @@
+I/O类型:
+    同步和异步: synchronous, asyncronous
+        关注的是消息通知机制
+
+            同步: 调用发出之后不会立即返回, 但一旦返回, 则返回结果即是最终结果;
+            异步: 调用发出之后, 被调用方立即返回消息, 但返回的并非最终结果; 被调用者通过状态、通知机制等来通知调用者或通过回调函数来处理结果
+
+
+    阻塞和非阻塞: block, nonblock
+        关注的是调用者等待被调用者返回调用结果时的状态
+
+        阻塞: 调用结果返回之前, 调用者会被挂起; 调用者只有在得到返回结果之后才能继续;
+        非阻塞: 调用者在调用结果返回之前, 不会被挂起, 即调用不会阻塞调用者
+    
+I/O模型:
+    block IO: 阻塞式
+    nonblock IO
+    IO multiplexing: 复用型
+    signal driven IO: 事件驱动式
+        通知:
+            水平触发: 多次通知
+            边缘触发: 只通知一次
+    asyncronous IO: 异步型
+
+    例如:
+        (1) 等待数据准备好, 从磁盘到内核内存
+        (2) 从内核内存复制到进程内存
+Nginx
+
+    Nginx特性:
+        模块化设计、较好的扩展性;
+        高可靠
+            master --> worker
+        低内存消耗
+            10000个keep-alive模式的connection, 仅需要2.5MB内存
+        支持热部署
+            不停机而更新配置文件, 日志文件滚动、升级程序版本
+        
+        支持事件驱动、AIO、mmap
+
+    基本功能:
+        静态资源的web服务器、能缓存打开的文件描述符
+        http、smtp、pop3协议的反向代理服务器
+        缓存加速、负载均衡
+        支持FastCGI(fpm,LNMP), uWSGI(Pyhon)等
+        模块化(非DSO机制), 过滤器zip, SSIJ及图像的大小调整
+        支持SSL
+
+    扩展功能:
+        支持基于名称和IP的虚拟主机
+        支持keeplive
+        支持平滑升级
+        定制访问日志、支持使用日志缓冲区提供日志存储性能
+        支持url rewrite
+        支持路径别名
+        支持基于IP及用户的控制访问
+        主持速率限制、支持并发数限制
+    
+    基本架构
+        一个master主进程负责生成多个Worker进程;
+        事件驱动; epoll(边缘驱动)、kqueue、/dev/poll
+            复用器: select, poll, rt signal
+        支持sendfile, sendfile64
+        支持AIO
+    nginx的工作模式: 非阻塞、事件驱动、由一个master进程生成多个worker进程, 每个进程响应n个请求
+        worker *n 
+
+    模块类型:
+        Standard HTTP modules
+        Optional HTTP modules
+        Mail modules
+        3rd party modules
+
+    安装方法:
+        源码: 编译安装
+        制作好的程序包
+
+    配置文件:
+        main配置段; 全局配置段
+        event: 定义event模型工作特性
+        http {}: 定义http协议相关的配置
+
+        配置指令: 要以分号结尾
+
+        支持使用变量:
+            内置变量:
+                模块会提供变量定义
+            自定义变量:
+                set var_name value
+        
+        主配置段的指令:
+            用于调试、定位问题
+            正常运行必备的配置
+            优化性能配置
+            事件相关的配置
+
+Nginx
+    I/O模型、nginx
+    主配置段的指令
+        正常运行的必备配置:
+
+            1、user USERNAME [GROUPNAME]
+                指定运行worker进程的用户和组
+                user nginx nginx;
+            2、pid /path/to/pid_file;
+                指定nginx守护进程的pid文件
+                pid /var/run/nginx/nginx.pid
+            3、worker_rlimit_nifile #:
+                指定所有worker进程所能够打开的最大文件句柄数量
+                

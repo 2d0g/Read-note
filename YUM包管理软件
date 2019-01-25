@@ -1,0 +1,2 @@
+    CentOS: yum, dnf
+    YUM:    Yellowdog Update Modifier, rpm的前端工具，可解决软件包相关的依赖性，可在多个库之间定位软件包，up2date的替代工具 
