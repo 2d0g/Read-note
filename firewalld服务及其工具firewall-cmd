@@ -14,6 +14,12 @@
     zones 存储区域规则
     firewalld.conf 默认配置文件，可以设置默认使用的区域，默认区域为 public，对应 zones目录下的 public.xml
 
+区域
+    在 firewalld 中最上层的组织是区域。如果一个包匹配区域相关联的网络接口或源 IP/掩码 ，它就是区域的一部分。可用的几个预定义区域：
+	# firewall-cmd --get-zones
+	block dmz drop external home internal public trusted work
+  
+
 配置工具firewall-cmd
     firewall-cmd --version  # 查看版本
     firewall-cmd --help     # 查看帮助
