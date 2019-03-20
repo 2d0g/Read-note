@@ -1,0 +1,9 @@
+配置文件
+    首先创建配置文件
+        mkdir -v  /etc/docker; touch daemon.json
+    
+    简单添加镜像加速
+        echo -e '{\n"registry-mirrors": ["https://registry.docker-cn.com"]\n}' \
+        > /etc/docker/daemon.json
+    
+

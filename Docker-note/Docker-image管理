@@ -1,0 +1,39 @@
+docker image
+    
+    image文件管理
+        $ docker image help        # 查看帮助，养成使用帮助文件的习惯，来应对所有变化
+            build       Build an image from a Dockerfile
+            history     Show the history of an image
+            import      Import the contents from a tarball to create a filesystem image
+            inspect     Display detailed information on one or more images
+            load        Load an image from a tar archive or STDIN
+            ls          List image
+            prune       Remove unused images
+            pull        Pull an image or a repository from a registry
+            push        Push an image or a repository to a registry
+            rm          Remove one or more images
+            save        Save one or more images to a tar archive (streamed to STDOUT by default)
+            tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
+ 
+        save: 打包一个或多个image至某个文件
+            $ docker image save busybox:latest hello-world:latest -o /tmp/test.tar
+            $ ls -al  /tmp
+                systemd-private-b5e5697d91aa43138fff6e89ceff8dd9-chronyd.service-k24XN0  test.tar
+        load: 从tar文件加载image
+            将/tmp/test.tar 复制到另外装有docker服务的主机上测试;
+            $ docker image load -i /opt/test.tar 
+                adab5d09ba79: Loading layer  1.416MB/1.416MB
+                Loaded image: busybox:latest
+                af0b15c8625b: Loading layer  3.584kB/3.584kB
+                Loaded image: hello-world:latest
+
+            docker imnage load [options]
+                options: -i: 指定tar文件的加载路径 -q: 静默加载，不输出信息到标准输出
+        push|pull: 推送到私有/公开仓库，操作前先docker login登录下
+            $ docker pull/push url/<用户名>/<镜像名>:<tag>
+        
+        tag: 将image文件再次打个不同于源image文件的标签
+            语法: docker image tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG]
+            $ docker image tag hello-world:latest hello-world:latest-01
+
+        余下的太简单不再阐述。 

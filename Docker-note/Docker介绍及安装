@@ -1,0 +1,41 @@
+docker 入门学习
+
+        docker的用途
+            大致有这么几类:
+                1) 提供一次性的运行环境。例如本地为测试他人软件、集成测试提供单元测试环境。如在本地主机搭建环境，会导致
+                    自己的环境出现莫名的问题，测试完成后不能完全删除，依赖关系复杂
+                2) 提供弹性的云服务。docker容器随开随毕，适合动态扩容
+                3) 组建微服务架构。通过创建多个容器，将其进行容器连接，从而搭建微服务架构
+        安装
+            docker是个开源的商业产品，如mysql等，所以衍生出2个版本: 社区版(ce)、企业版(ee)
+                yum-config-manager \
+                --add-repo \
+                https://download.docker.com/linux/centos/docker-ce.repo
+
+                wget https://download.docker.com/linux/centos/docker-ce.repo -O /etc/yum.repos.d/docker-ce.repo
+                curl -o https://download.docker.com/linux/centos/docker-ce.repo /etc/yum.repos.d/docker-ce.repo
+
+                以上三种方式安装repo
+                为了加速访问或下载，替换repo文件，采用tuna.tsinghua mirrors
+
+                sed -i 's/download.docker.com+mirrors.tuna.tsinghua.edu.cn/docker-ce/g' /etc/yum.repos.d/docker-ce.repo
+                yum clean all  #清除yum缓存
+                yum repolist/makecache  #构建缓存
+
+                yum -y install docker-ce docker-ce-cli containerd.io
+
+            验证
+                docker version
+        
+            将当前用户(root除外)添加到docker组，docker command 需要sudo权限
+                sudo usermod -aG docker $USER
+            
+            docker采用C/S架构，所以必须先开启docker服务，redhat8 提供了另一种方式，未采用C/S架构，可直接启动docker
+
+                systemctl start|stop|restart docker
+            
+
+
+
+
+

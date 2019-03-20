@@ -1,0 +1,63 @@
+docker container管理
+    $ docker container help   # 查看帮助，养成查看帮助文档习惯
+        attach      Attach local standard input, output, and error streams to a running container
+        commit      Create a new image from a container's changes
+        cp          Copy files/folders between a container and the local filesystem
+        create      Create a new container
+        diff        Inspect changes to files or directories on a container's filesystem
+        exec        Run a command in a running container
+        export      Export a container's filesystem as a tar archive
+        inspect     Display detailed information on one or more containers
+        kill        Kill one or more running containers
+        logs        Fetch the logs of a container
+        ls          List containers
+        pause       Pause all processes within one or more containers
+        port        List port mappings or a specific mapping for the container
+        prune       Remove all stopped containers
+        rename      Rename a container
+        restart     Restart one or more containers
+        rm          Remove one or more containers
+        run         Run a command in a new container
+        start       Start one or more stopped containers
+        stats       Display a live stream of container(s) resource usage statistics
+        stop        Stop one or more running containers
+        top         Display the running processes of a container
+        unpause     Unpause all processes within one or more containers
+        update      Update configuration of one or more containers
+        wait        Block until one or more containers stop, then print their exit codes
+
+    以上命令大致分为容器生命周期管理、容器操作、容器rootfs命令，与docker 命令有部分重合
+        生命周期: run、start|stop|restart、kill、rm、prune、pause|unpause、exec 
+            以上不多赘述。
+        容器操作: attach、logs、top、wait、port、rename、update、inspect、create
+            wait: 阻塞运行直到容器停止，然后打印出它的退出代码。
+                用法: docker [container]  wait imageName
+            update: 动态更新容器配置
+                用法: docker [container] update [OPTIONS] CONTAINER [CONTAINER...]
+                $ docker [container] update --help
+                    后续详续
+            create: 创建一个新的容器但不启动它
+                $ docker [container] create --name NAME imageName:tag
+            attach: Docker attach可以attach到一个已经运行的容器的stdin，然后进行命令执行的动作。 
+                但是需要注意的是，如果从这个stdin中exit，会导致容器的停止。--sig-proxy=false来
+                确保CTRL-D或CTRL-C不会关闭容器。
+                用法: docker attach [OPTIONS] CONTAINER
+
+        容器rootfs命令: commit、cp、diff
+            docker commit :从容器创建一个新的镜像。
+                用法: docker commit [OPTIONS] CONTAINER(已启动的容器name) [REPOSITORY[:TAG]]
+                    (NEW imageName:tag(new))
+                OPTIONS: -a: 提交的镜像作者 -c: 使用Dockerfile指令来创建对象 -m: 提交说明
+                    -p: 暂停容器再提交
+                示例:  
+                $ docker container commit -a "hoastart" -m "new create" yes-world01 busybox:new
+            docker cp: 容器与主机之间的数据拷贝
+                用法: docker cp [OPTIONS] CONTAINER:SRC_PATH DEST_PATH|- 
+                    docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH
+                    双向拷贝，在主机上操作
+                $ docker cp test.tar yes-world01:/tmp
+            docker diff: 检查容器里文件结构的更改。
+                用法: docker diff [OPTIONS] CONTAINER
+        
+
+            

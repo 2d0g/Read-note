@@ -1,0 +1,63 @@
+Docker 总结
+    本意，言外之一
+    一次封装，到处运行
+
+    Docker是：“一次封装，到处运行”，因为docker决绝了应用环境的问题，安装了docker的平台就能跑“docker包”，
+        这样就决绝了“开发环境能跑，一上线就崩”的尴尬。
+
+    基于LXC的高级容器引擎（高度封装），用go语言开发
+    Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布
+        到任何流行的Linux机器上，也可以实现虚拟化，容器是完全使用沙箱机制，相互之间不会有任何接口。一个
+        完整的Docker有以下几个部分组成：
+        Client
+        Daemon
+        Image：和常见的系统iso镜像类似，包含了应用程序的信息
+        Container：相当于运行起来的虚拟机，一个实例
+
+        Registry（仓库）：存放镜像的仓库
+
+        常用命令:
+            yum -y install docker
+            systemctl status|start|stop|restart docker
+            
+            docker cp /path/to/file ContainerID:/path/to/
+
+            
+            镜像管理：
+            docker images :罗列
+            docker rmi:删除
+            docker ps -a;
+            docker kill
+            docker start
+            docker stop
+            docker exec -it name /bin/sh
+
+    优势:
+        持续集成、版本控制、可移植性、隔离性、安全性
+
+        在DevOps吸引力下，要求环境一致性。在开发到交付布署环境一致性情况下解决不同环境版本，与依赖
+        配置、构建、测试、发布镜像
+
+        多云品台
+            google gcp, aws ec2,
+        
+        环境标准化和版本控制
+            在持续集成的基础上，可以将部署好的镜像进行打包，推送镜像到私有仓库进行存储
+
+        隔离性：
+            docker容器隔离效果与vm管理程序不相上下，
+            资源隔离，管理方便
+            Docker还能确保每个应用程序只使用分配给它的资源（包括CPU、内存和磁盘空间）。
+        安全性
+            Docker确保运行在容器中的应用程序和其他容器中的应用程序是完全分隔与隔离的，
+            在通信流量和管理上赋予你完全的控制权。Docker容器不能窥视运行在其他容器中的进程。
+            从体系结构角度来看，每个容器只使用着自己的资源（从进程到网络堆栈）。
+
+            Docker将宿主机操作系统上的敏感挂载点（例如/proc和/sys）作为只读挂载点，并且使用
+            一种写时复制系统来确保容器不能读取其他容器的数据。
+
+            images数字签名的可靠性
+
+
+    
+

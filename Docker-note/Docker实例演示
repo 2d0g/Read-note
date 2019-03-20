@@ -1,0 +1,38 @@
+docker 入门
+    组成部分
+        Client
+        Daemon: server守护进程
+        Image: 和常见的系统iso镜像类似，包含了应用程序以及依赖的信息。二进制文件，可以进行二次制作并
+            打包镜像是由一系列只读层组成的一个栈，上面的层依赖其下面的层，这些层从外面看起来是一个整体。
+            栈底的镜像被称作基础镜像(base image)，所有上面的层都基于这个基础镜像。通用的文件。实时复制
+            ，立即运行
+        Container: 相当于运行起来的虚拟机，一个实例。容器container不仅包含镜像的所有层，它还在最上面
+            添加了一个可读层称作容器层container layer。
+        Registry(仓库):存放镜像的仓库，官方仓库 https://hub.docker.com/
+
+    实例
+        首先先列出本机的images文件
+            $ docker image ls       # 列出image
+                REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+                mysql               5.7                 e47e309f72c8        5 weeks ago         372MB
+                mariadb             10.1                01c0c4475a0a        4 months ago        375MB
+            $ docker image rm [imageName]     # 删除image文件
+        
+        简单的演示一下，从Docker hub 拉取 image文件
+            $ docker image pull busybox
+            $ docker image pull library/busybox
+                以上两者皆可。方式而只是指定了image 文件在仓库里面的位置。libaray 是image文件所在的组，
+                busybox是image 的名称
+        
+        再次查看image文件
+            $ docker image ls
+                REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+                busybox             latest              d8233ab899d4        4 weeks ago         1.2MB
+                mysql               5.7                 e47e309f72c8        5 weeks ago         372MB
+                mariadb             10.1                01c0c4475a0a        4 months ago        375MB
+        
+        运行试试
+            $ docker container run busybox
+            $ docker run busybox
+                皆可，该容器运行后自动终止，原因后面详叙。
+        

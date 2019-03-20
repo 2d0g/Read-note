@@ -1,0 +1,81 @@
+Options and Manager-command and Command
+    主要包括以下几部分
+        options: 选项
+        manager-command: 管理命令
+        command: 命令
+    
+    Options
+        --config [string]	客户端本地配置文件路径	默认为 ~/.docker
+        -D, --debug	        启用调试模式	
+        --help	            打印用法	
+        -H, --host list	    通过socket访问指定的docker守护进程(服务端)	unix:// , fd:// , tcp://
+        -l                  设置日志级别 (debug 、info 、warn 、error 、fatal)	默认为 info
+            --log-level [string]	
+        --tls	            启用TLS加密	
+        --tlscacert [string]    指定信任的CA根证书路径	默认为 ~/.docker/ca.pem
+        --tlscert [string]	客户端证书路径	默认为 ~/.docker/cert.pem
+        --tlskey [string]	客户端证书私钥路径	默认为 ~/.docker/key.pem
+        --tlsverify	        启用TLS加密并验证客户端证书	
+        -v, --version	    打印docker客户端版本信息	
+
+    Manager-command 
+        bulider: 构建缓存(缓存对象仍是image)管理,也可理解为image管理
+            [options] prune: 裁减构建缓存
+            options:
+                -a/ -all: 移除所有使用的image文件
+                --filter FILTER (eg. 'unused-for=24h')
+                -f: 强制移除，不提醒
+                --keep-storage BYTES : 保留多少字节
+        config: 管理node docker配置文件
+        container: 管理容器
+        engine: 管理docker引擎
+            docker 引擎包含三部分内容:
+                Docker Daemon — docker 的守护进程，属于C/S中的server
+                Docker REST API — docker daemon向外暴露的REST接口, 比如docker login就是调用
+                    REST API
+                Docker CLI — docker向外暴露的命令行接口（Command Line API）
+        
+        images: 管理镜像文件
+        network: 管理网络
+        plugin: 管理插件
+        volume: 管理卷组
+        swarm   管理Swarm模式
+        service	管理Swarm模式下的服务
+        node	管理Swarm模式下的docker集群中的节点
+        secret	管理Swarm模式下的敏感数据
+        stack	管理Swarm模式下利用compose-file管理服务
+
+    Command
+        run
+            -h docker-anyesu	:设置容器的主机名, 默认随机生成
+            --dns 8.8.8.8	:指定容器使用的DNS服务器, 默认和宿主一致
+            -e docker_host=172.17.0.1	:设置环境变量
+            --cpuset="0-2" or --cpuset="0,1,2"	:绑定容器到指定CPU运行
+            -m 100M	设置容器使用内存最大值
+            --net bridge	:指定容器的网络连接类型, 支持 bridge / host / none / container 四种类型
+            --ip 172.18.0.13	:为容器分配固定ip(需要使用自定义网络)
+            --expose 8081 --expose 8082	:开放一个端口或一组端口, 会覆盖镜像设置中开放的端口
+            -p [宿主机端口]:[容器内端口]	:宿主机到容器的端口映射, 可指定宿主机的要监听的ip, 默认为 0.0.0.0
+            -P	注意是大写的, 宿主机随机指定一组可用的端口映射容器 expose 的所有端口
+            -v [宿主机目录路径]:[容器内目录路径]	:挂载宿主机的指定目录(或文件)到容器内的指定目录(或文件)
+            --add-host [主机名]:[ip]	:为容器hosts文件追加host, 默认会在hosts文件最后追加 [主机名]:[容器ip]
+            --volumes-from [其他容器名]	:将其他容器的数据卷添加到此容器
+            --link [其他容器名]:[在该容器中的别名]	:添加链接到另一个容器, 在本容器hosts文件中加入关联容器的
+                记录, 效果类似于 --add-host
+        
+        update: 动态的更新容器的配置(硬件资源)
+
+            用法: Usage:  docker update [OPTIONS] CONTAINER [CONTAINER...]
+                --blkio-weight	    0	阻塞IO(相对权重)，介于10和1000之间，或0禁用(默认为0)
+                --cpu-period    	0	限制CPU CFS(完全公平的调度程序)周期
+                --cpu-quota	        0	限制CPU CFS(完全公平的调度程序)配额
+                --cpu-rt-period	    0	限制CPU实时周期(以微秒为单位)
+                --cpu-rt-runtime	0	以微秒为单位限制CPU实时运行时间
+                --cpu-shares, -c	0	CPU份额(相对权重)
+                --cpuset-cpus		    允许执行的CPU(0-3,0)
+                --cpuset-mems		    允许执行的内存率(0-3,0.1)
+                --kernel-memory		    内核内存限制
+                --memory, -m		    内存限制
+                --memory-reservation	内存软限制
+                --memory-swap		    交换限制等于内存加交换：’-1‘以启用无限制的交换
+                --restart		        重新启动在容器退出时应用的策略

@@ -1,0 +1,27 @@
+Docker-network管理
+    查询所有的network-管理命令
+        $ docker network help
+        Options: -f: 强制
+
+        重点学习整理以下四个命令:
+        command:
+            connect: 将一个容器加入到某个网络中
+                用法: docker network connect [Options] NetName ContainerID
+            
+            create: 创建一个网络
+                用法: docker network create [Options] Test_Net
+            
+            disconnect: 与connect相反，从网络中断开一个容器的连接
+                用法: docker network disconnect [Options] NetName ContainerID
+            
+            inspect: 查看详情 
+                用法: docker network inspect NetName
+
+    Docker中内置的网络模式包括如下几种:
+
+        bridge 桥接
+        host 本地网络模式
+        macvlan 这个模式貌似是最新加的
+        null 无网络
+        overlay 用于swarm集群中容器的跨主机网络访问
+            
